@@ -29,7 +29,7 @@ var timeInterval:Long = 60000
 
 ### Handler Part:
 
-####Receiver
+#### Receiver
 
 The broadcast receiver is used to invoke an event inside the app
 
@@ -44,15 +44,15 @@ class MyReceiver : BroadcastReceiver() {
 }
 ```
 
-####Alarm Manager
+#### Alarm Manager
 
-Initialization
+##### Initialization
 
 ```
 private var mAlarmManager : AlarmManager? = null
 ```
 
-Starting an Alarm
+##### Starting an Alarm
 ```
     fun startAlarmManager() {
         val mIntent = Intent(this, MyReceiver::class.java)
@@ -67,7 +67,7 @@ Starting an Alarm
     }
 ```
 
-Stopping an Alarm
+##### Stopping an Alarm
 ```
     fun stopAlarmManager() {
         val mIntent = Intent(this, MyReceiver::class.java)
@@ -80,7 +80,7 @@ Stopping an Alarm
 
 ### Usage / Example -
 
-####As a component
+#### As a component
 
 You can take MyReceiver.kt file and include in your project
 
@@ -99,7 +99,6 @@ You can use include below code in your activity and invoke it straight away
     }
 ```
 
-Stopping an Alarm
 ```
     fun stopAlarmManager() {
         val mIntent = Intent(this, MyReceiver::class.java)
@@ -108,6 +107,6 @@ Stopping an Alarm
     }
 ```
 
-####As an Individual Activity
+#### As an Individual Activity
 
 You can include MyReceiver.kt and AlarmManagerActivity.kt in your project
