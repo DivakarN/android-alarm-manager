@@ -1,45 +1,113 @@
-**Edit a file, create a new file, and clone from Bitbucket in under 2 minutes**
+# Android Alarm Manager - Kotlin
 
-When you're done, you can delete the content in this README and update the file with details for others getting started with your repository.
+### Introduction:
 
-*We recommend that you open this README in another tab as you perform the tasks below. You can [watch our video](https://youtu.be/0ocf7u76WSo) for a full demo of all the steps in this tutorial. Open the video in a new tab to avoid leaving Bitbucket.*
+This project is created with the intention to understand the working of 
+Alarm Manager which can trigger particular event for every x mins.
 
----
+In this project, You will get to know how you can use broadcast receiver
+for Alarm Manager, to start alarm manager and to stop alarm manager given
+in a simple format
 
-## Edit a file
+----------------------------------------------------------------------------------------------------
 
-You’ll start by editing this README file to learn how to edit a file in Bitbucket.
+### Installation:
 
-1. Click **Source** on the left side.
-2. Click the README.md link from the list of files.
-3. Click the **Edit** button.
-4. Delete the following text: *Delete this line to make a change to the README from Bitbucket.*
-5. After making your change, click **Commit** and then **Commit** again in the dialog. The commit page will open and you’ll see the change you just made.
-6. Go back to the **Source** page.
+No specific installation is required for this project.
 
----
+----------------------------------------------------------------------------------------------------
 
-## Create a file
+### Configuration:
 
-Next, you’ll add a new file to this repository.
+The time Interval for invoking alarm should be configured in the activity
 
-1. Click the **New file** button at the top of the **Source** page.
-2. Give the file a filename of **contributors.txt**.
-3. Enter your name in the empty file space.
-4. Click **Commit** and then **Commit** again in the dialog.
-5. Go back to the **Source** page.
+```
+var timeInterval:Long = 60000
+```
 
-Before you move on, go ahead and explore the repository. You've already seen the **Source** page, but check out the **Commits**, **Branches**, and **Settings** pages.
+----------------------------------------------------------------------------------------------------
 
----
+### Handler Part:
 
-## Clone a repository
+####Receiver
 
-Use these steps to clone from SourceTree, our client for using the repository command-line free. Cloning allows you to work on your files locally. If you don't yet have SourceTree, [download and install first](https://www.sourcetreeapp.com/). If you prefer to clone from the command line, see [Clone a repository](https://confluence.atlassian.com/x/4whODQ).
+The broadcast receiver is used to invoke an event inside the app
 
-1. You’ll see the clone button under the **Source** heading. Click that button.
-2. Now click **Check out in SourceTree**. You may need to create a SourceTree account or log in.
-3. When you see the **Clone New** dialog in SourceTree, update the destination path and name if you’d like to and then click **Clone**.
-4. Open the directory you just created to see your repository’s files.
+```
+class MyReceiver : BroadcastReceiver() {
 
-Now that you're more familiar with your Bitbucket repository, go ahead and add a new file locally. You can [push your change back to Bitbucket with SourceTree](https://confluence.atlassian.com/x/iqyBMg), or you can [add, commit,](https://confluence.atlassian.com/x/8QhODQ) and [push from the command line](https://confluence.atlassian.com/x/NQ0zDQ).
+    override fun onReceive(context: Context, intent: Intent) {
+        Toast.makeText(context,"This toast will be shown every X minutes", Toast.LENGTH_SHORT).show()
+        \\Include your custom function here
+    }
+    
+}
+```
+
+####Alarm Manager
+
+Initialization
+
+```
+private var mAlarmManager : AlarmManager? = null
+```
+
+Starting an Alarm
+```
+    fun startAlarmManager() {
+        val mIntent = Intent(this, MyReceiver::class.java)
+
+        val mPendingIntent = PendingIntent.getBroadcast(this, 0, mIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        mAlarmManager = this
+            .getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        mAlarmManager!!.setRepeating(
+            AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
+            timeInterval, mPendingIntent
+        )
+    }
+```
+
+Stopping an Alarm
+```
+    fun stopAlarmManager() {
+        val mIntent = Intent(this, MyReceiver::class.java)
+        val mPendingIntent = PendingIntent.getBroadcast(this, 0, mIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        mAlarmManager!!.cancel(mPendingIntent)
+    }
+```
+
+----------------------------------------------------------------------------------------------------
+
+### Usage / Example -
+
+####As a component
+
+You can take MyReceiver.kt file and include in your project
+
+You can use include below code in your activity and invoke it straight away
+```
+    fun startAlarmManager() {
+        val mIntent = Intent(this, MyReceiver::class.java)
+
+        val mPendingIntent = PendingIntent.getBroadcast(this, 0, mIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        mAlarmManager = this
+            .getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        mAlarmManager!!.setRepeating(
+            AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
+            timeInterval, mPendingIntent
+        )
+    }
+```
+
+Stopping an Alarm
+```
+    fun stopAlarmManager() {
+        val mIntent = Intent(this, MyReceiver::class.java)
+        val mPendingIntent = PendingIntent.getBroadcast(this, 0, mIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        mAlarmManager!!.cancel(mPendingIntent)
+    }
+```
+
+####As an Individual Activity
+
+You can include MyReceiver.kt and AlarmManagerActivity.kt in your project

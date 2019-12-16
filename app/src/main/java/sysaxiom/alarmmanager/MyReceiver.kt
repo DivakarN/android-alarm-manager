@@ -1,4 +1,4 @@
-package com.joancolmenero.broadcastreceiverandalarmmanagerkotlin
+package sysaxiom.alarmmanager
 
 import android.content.BroadcastReceiver
 import android.content.Context

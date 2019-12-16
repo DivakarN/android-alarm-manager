@@ -1,4 +1,4 @@
-package com.joancolmenero.broadcastreceiverandalarmmanagerkotlin
+package sysaxiom.alarmmanager
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -10,33 +10,32 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import com.joancolmenero.broadcastreceiverandalarmmanagerkotlin.R
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import java.io.File
 
-class MainActivity : AppCompatActivity() {
+class AlarmManagerActivity : AppCompatActivity() {
 
+    //region Variable Initialization
     private var mAlarmManager : AlarmManager? = null
+    var timeInterval:Long = 60000
+    //endregion
 
-
+    //region Activity Life Cycle
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        btn_start_alarm.setOnClickListener { view ->
-            inVokeAlarmManager()
-        }
-
-        btn_cancel_alarm.setOnClickListener {
-            val mIntent = Intent(this, MyReceiver::class.java)
-            val mPendingIntent = PendingIntent.getBroadcast(this, 0, mIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-            mAlarmManager!!.cancel(mPendingIntent)
-        }
+        buttonActionSetup()
     }
+    //endregion
 
-    fun inVokeAlarmManager() {
+    //region Alarm Manager
+    fun startAlarmManager() {
         val mIntent = Intent(this, MyReceiver::class.java)
 
         val mPendingIntent = PendingIntent.getBroadcast(this, 0, mIntent, PendingIntent.FLAG_UPDATE_CURRENT)
@@ -44,26 +43,40 @@ class MainActivity : AppCompatActivity() {
             .getSystemService(Context.ALARM_SERVICE) as AlarmManager
         mAlarmManager!!.setRepeating(
             AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
-            600000, mPendingIntent
+            timeInterval, mPendingIntent
         )
     }
+    fun stopAlarmManager() {
+        val mIntent = Intent(this, MyReceiver::class.java)
+        val mPendingIntent = PendingIntent.getBroadcast(this, 0, mIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        mAlarmManager!!.cancel(mPendingIntent)
+    }
+    //endregion
 
+    //region UI Setup
+    fun buttonActionSetup() {
+        btn_start_alarm.setOnClickListener { view ->
+            startAlarmManager()
+        }
+
+        btn_cancel_alarm.setOnClickListener {
+            stopAlarmManager()
+        }
+    }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
         }
     }
+    //endregion
 
+    //region Share Back up Data
     private fun shareBackupData(file: File) {
 
         val jsonUri = FileProvider.getUriForFile(
@@ -84,4 +97,5 @@ class MainActivity : AppCompatActivity() {
 
 
     }
+    //endregion
 }
